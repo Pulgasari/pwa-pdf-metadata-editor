@@ -8,15 +8,13 @@
     body { font-family: sans-serif; padding: 2rem; }
     label { display: block; margin-top: 1rem; }
     input, button { width: 100%; padding: 0.5rem; margin-top: 0.5rem; }
+    .file-entry { border: 1px solid #ccc; padding: 1rem; margin-top: 1rem; }
   </style>
 </head>
 <body>
   <h1>PDF Metadata Editor (PWA)</h1>
-  <input type="file" id="fileInput" accept="application/pdf">
-  <label>Titel <input type="text" id="title"></label>
-  <label>Autor <input type="text" id="author"></label>
-  <label>Sprache <input type="text" id="lang"></label>
-  <button id="saveBtn">Speichern & Herunterladen</button>  <script type="module" src="app.js"></script>  <script>
+  <button id="openFilesBtn">PDFs auswählen</button>
+  <div id="fileList"></div>  <script type="module" src="app.js"></script>  <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
