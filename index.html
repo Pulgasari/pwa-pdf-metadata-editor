@@ -8,76 +8,15 @@
     body { font-family: sans-serif; padding: 2rem; }
     label { display: block; margin-top: 1rem; }
     input, button { width: 100%; padding: 0.5rem; margin-top: 0.5rem; }
-    .file-entry { border: 1px solid #ccc; padding: 1rem; margin-top: 1rem; }
   </style>
 </head>
 <body>
   <h1>PDF Metadata Editor (PWA)</h1>
-  <button id="openFilesBtn">PDFs auswählen</button>
-  <div id="fileList"></div>  <script type="module">
-    import { PDFDocument } from 'https://cdn.skypack.dev/pdf-lib';
-
-    const openFilesBtn = document.getElementById('openFilesBtn');
-    const fileList = document.getElementById('fileList');
-
-    async function handleFile(fileHandle) {
-      const file = await fileHandle.getFile();
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-
-      const container = document.createElement('div');
-      container.className = 'file-entry';
-
-      const titleInput = document.createElement('input');
-      titleInput.value = pdfDoc.getTitle() || '';
-      titleInput.placeholder = 'Titel';
-
-      const authorInput = document.createElement('input');
-      authorInput.value = pdfDoc.getAuthor() || '';
-      authorInput.placeholder = 'Autor';
-
-      const langInput = document.createElement('input');
-      langInput.value = pdfDoc.getLanguage() || '';
-      langInput.placeholder = 'Sprache';
-
-      const saveBtn = document.createElement('button');
-      saveBtn.textContent = 'Speichern';
-
-      saveBtn.addEventListener('click', async () => {
-        pdfDoc.setTitle(titleInput.value);
-        pdfDoc.setAuthor(authorInput.value);
-        pdfDoc.setLanguage(langInput.value);
-
-        const pdfBytes = await pdfDoc.save();
-        const writable = await fileHandle.createWritable();
-        await writable.write(pdfBytes);
-        await writable.close();
-        alert('Datei gespeichert');
-      });
-
-      container.appendChild(titleInput);
-      container.appendChild(authorInput);
-      container.appendChild(langInput);
-      container.appendChild(saveBtn);
-
-      fileList.appendChild(container);
-    }
-
-    openFilesBtn.addEventListener('click', async () => {
-      const handles = await window.showOpenFilePicker({
-        multiple: true,
-        types: [{
-          description: 'PDF-Dateien',
-          accept: { 'application/pdf': ['.pdf'] }
-        }]
-      });
-
-      fileList.innerHTML = '';
-      for (const handle of handles) {
-        await handleFile(handle);
-      }
-    });
-  </script>  <script>
+  <input type="file" id="fileInput" accept="application/pdf">
+  <label>Titel <input type="text" id="title"></label>
+  <label>Autor <input type="text" id="author"></label>
+  <label>Sprache <input type="text" id="lang"></label>
+  <button id="saveBtn">Speichern & Herunterladen</button>  <script type="module" src="app.js"></script>  <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
