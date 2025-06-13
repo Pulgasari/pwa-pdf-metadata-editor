@@ -1,36 +1,62 @@
 import { PDFDocument } from 'https://cdn.skypack.dev/pdf-lib';
 
-const fileInput = document.getElementById('fileInput');
-const titleInput = document.getElementById('title');
-const authorInput = document.getElementById('author');
-const langInput = document.getElementById('lang');
-const saveBtn = document.getElementById('saveBtn');
+const openFilesBtn = document.getElementById('openFilesBtn');
+const fileList = document.getElementById('fileList');
 
-let pdfDoc;
-
-fileInput.addEventListener('change', async (e) => {
-  const file = e.target.files[0];
+async function handleFile(fileHandle) {
+  const file = await fileHandle.getFile();
   const arrayBuffer = await file.arrayBuffer();
-  pdfDoc = await PDFDocument.load(arrayBuffer);
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
 
+  const container = document.createElement('div');
+  container.className = 'file-entry';
+
+  const titleInput = document.createElement('input');
   titleInput.value = pdfDoc.getTitle() || '';
+  titleInput.placeholder = 'Titel';
+
+  const authorInput = document.createElement('input');
   authorInput.value = pdfDoc.getAuthor() || '';
+  authorInput.placeholder = 'Autor';
+
+  const langInput = document.createElement('input');
   langInput.value = pdfDoc.getLanguage() || '';
-});
+  langInput.placeholder = 'Sprache';
 
-saveBtn.addEventListener('click', async () => {
-  if (!pdfDoc) return;
-  pdfDoc.setTitle(titleInput.value);
-  pdfDoc.setAuthor(authorInput.value);
-  pdfDoc.setLanguage(langInput.value);
+  const saveBtn = document.createElement('button');
+  saveBtn.textContent = 'Speichern';
 
-  const pdfBytes = await pdfDoc.save();
-  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-  const url = URL.createObjectURL(blob);
+  saveBtn.addEventListener('click', async () => {
+    pdfDoc.setTitle(titleInput.value);
+    pdfDoc.setAuthor(authorInput.value);
+    pdfDoc.setLanguage(langInput.value);
 
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'bearbeitet.pdf';
-  a.click();
-  URL.revokeObjectURL(url);
+    const pdfBytes = await pdfDoc.save();
+    const writable = await fileHandle.createWritable();
+    await writable.write(pdfBytes);
+    await writable.close();
+    alert(`Datei ${file.name} gespeichert`);
+  });
+
+  container.appendChild(titleInput);
+  container.appendChild(authorInput);
+  container.appendChild(langInput);
+  container.appendChild(saveBtn);
+
+  fileList.appendChild(container);
+}
+
+openFilesBtn.addEventListener('click', async () => {
+  const handles = await window.showOpenFilePicker({
+    multiple: true,
+    types: [{
+      description: 'PDF-Dateien',
+      accept: { 'application/pdf': ['.pdf'] }
+    }]
+  });
+
+  fileList.innerHTML = '';
+  for (const handle of handles) {
+    await handleFile(handle);
+  }
 });
