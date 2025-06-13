@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="de">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="manifest.json">
@@ -13,8 +12,10 @@
 </head>
 <body>
   <h1>PDF Metadata Editor (PWA)</h1>
-  <button id="openFilesBtn">PDFs auswählen</button>
-  <div id="fileList"></div>  <script type="module">
+  <button id="openFilesBtn">Choose PDFs</button>
+  <div id="fileList"></div>
+  
+  <script type="module">
     import { PDFDocument } from 'https://cdn.skypack.dev/pdf-lib';
 
     const openFilesBtn = document.getElementById('openFilesBtn');
@@ -30,18 +31,18 @@
 
       const titleInput = document.createElement('input');
       titleInput.value = pdfDoc.getTitle() || '';
-      titleInput.placeholder = 'Titel';
+      titleInput.placeholder = 'Title';
 
       const authorInput = document.createElement('input');
       authorInput.value = pdfDoc.getAuthor() || '';
-      authorInput.placeholder = 'Autor';
+      authorInput.placeholder = 'Author';
 
       const langInput = document.createElement('input');
       langInput.value = pdfDoc.getLanguage() || '';
-      langInput.placeholder = 'Sprache';
+      langInput.placeholder = 'Language';
 
       const saveBtn = document.createElement('button');
-      saveBtn.textContent = 'Speichern';
+      saveBtn.textContent = 'Save';
 
       saveBtn.addEventListener('click', async () => {
         pdfDoc.setTitle(titleInput.value);
@@ -77,9 +78,12 @@
         await handleFile(handle);
       }
     });
-  </script>  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
-  </script></body>
+  </script>  
+  
+  <script>if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
+
+</body>
 </html>
